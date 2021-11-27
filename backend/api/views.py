@@ -25,6 +25,7 @@ from .serializers import (ChangePasswordSerializer, FollowRecipeSerialiser,
 
 
 class NewObtainAuthToken(APIView):
+    '''Класс получение токена'''
     serializer_class = NewAuthTokenSerializer
     permission_classes = [AllowAny]
 
@@ -42,6 +43,7 @@ class UserView(mixins.ListModelMixin,
                mixins.RetrieveModelMixin,
                mixins.DestroyModelMixin,
                viewsets.GenericViewSet):
+    '''Класс работы с пользователями'''
     queryset = User.objects.all()
     serializer_class = UserRegSerializer
     pagination_class = CustomPaginator
@@ -79,6 +81,7 @@ class UserView(mixins.ListModelMixin,
         methods=['get'], detail=False, permission_classes=[IsAuthenticated]
     )
     def subscriptions(self, request, *args, **kwargs):
+        '''Отображение подписок'''
         follower = request.user
         followers = Follow.objects.filter(follower=follower).all()
         users = User.objects.filter(following__in=followers).all()
@@ -94,6 +97,7 @@ class UserView(mixins.ListModelMixin,
         detail=True, permission_classes=[IsAuthenticated]
     )
     def subscribe(self, request, *args, **kwargs):
+        '''Подписка/отписка'''
         follower = request.user
         user = User.objects.get(id=int(kwargs['pk']))
         if request.method == 'GET':
@@ -129,6 +133,7 @@ class UserView(mixins.ListModelMixin,
         methods=['post'], detail=False, permission_classes=[IsAuthenticated]
     )
     def set_password(self, request, *args, **kwargs):
+        '''Изменение пароля'''
         obj = request.user
         serializer = ChangePasswordSerializer(data=request.data)
 
@@ -145,6 +150,7 @@ class UserView(mixins.ListModelMixin,
 
 
 class Logout(APIView):
+    '''Класс удаления токена'''
     permission_classes = [CustomUserPermission]
 
     def post(self, request, format=None):
@@ -157,6 +163,7 @@ class RecipeView(mixins.CreateModelMixin,
                  mixins.UpdateModelMixin,
                  mixins.DestroyModelMixin,
                  viewsets.GenericViewSet):
+    '''Класс работы с рецептами'''
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
     pagination_class = CustomPaginator
@@ -174,6 +181,7 @@ class RecipeView(mixins.CreateModelMixin,
         permission_classes=[IsAuthenticated]
     )
     def favorite(self, request, *args, **kwargs):
+        '''Добавление в избранное/удаление из избранного'''
         user = request.user
         recipe = Recipe.objects.get(id=int(kwargs['pk']))
         if request.method == 'GET':
@@ -205,6 +213,7 @@ class RecipeView(mixins.CreateModelMixin,
         permission_classes=[IsAuthenticated]
     )
     def shopping_cart(self, request, *args, **kwargs):
+        '''Создание списка покупок'''
         user = request.user
         recipe = Recipe.objects.get(id=int(kwargs['pk']))
         if request.method == 'GET':
@@ -236,6 +245,7 @@ class RecipeView(mixins.CreateModelMixin,
         permission_classes=[IsAuthenticated]
     )
     def download_shopping_cart(self, request, *args, **kwargs):
+        '''Скачивание списка покупок в формате PDF'''
         user = request.user
         shop_obj = ShoppingCart.objects.filter(user=user).all()
         cart = {}
@@ -279,11 +289,13 @@ class RecipeView(mixins.CreateModelMixin,
 
 
 class TagsView(viewsets.ModelViewSet):
+    '''Класс работы с тегами'''
     queryset = Tags.objects.all()
     serializer_class = TagSerializer
 
 
 class IngredientsView(viewsets.ModelViewSet):
+    '''Класс работы с ингредиентами'''
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerialiser
     filter_backends = (SearchFilter,)
