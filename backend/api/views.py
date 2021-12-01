@@ -2,6 +2,7 @@ import io
 
 from django.conf import settings
 from django.http import FileResponse
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from reportlab.pdfbase import pdfmetrics, ttfonts
 from reportlab.pdfgen import canvas
@@ -15,9 +16,9 @@ from rest_framework.views import APIView
 
 from .filters import CustomFilter
 from .models import (Favorite, Follow, Ingredient, Recipe, RecipeIngredient,
-                     ShoppingCart, Tags, User)
+                     ShoppingCart, Tag, User)
 from .pagination import CustomPaginator
-from .permissions import CustomUserPermission
+from .permissions import CustomPermission
 from .serializers import (ChangePasswordSerializer, FollowRecipeSerialiser,
                           FollowSerializer, IngredientSerialiser,
                           NewAuthTokenSerializer, RecipeSerializer,
@@ -83,8 +84,8 @@ class UserView(mixins.ListModelMixin,
     def subscriptions(self, request, *args, **kwargs):
         '''Отображение подписок'''
         follower = request.user
-        followers = Follow.objects.filter(follower=follower).all()
-        users = User.objects.filter(following__in=followers).all()
+        followers = Follow.objects.filter(follower=follower)
+        users = User.objects.filter(following__in=followers)
 
         page = self.paginate_queryset(users)
         serializer = FollowSerializer(
@@ -99,7 +100,7 @@ class UserView(mixins.ListModelMixin,
     def subscribe(self, request, *args, **kwargs):
         '''Подписка/отписка'''
         follower = request.user
-        user = User.objects.get(id=int(kwargs['pk']))
+        user = get_object_or_404(User, id=int(kwargs['pk']))
         if request.method == 'GET':
             if follower == user:
                 return Response(
@@ -137,21 +138,19 @@ class UserView(mixins.ListModelMixin,
         obj = request.user
         serializer = ChangePasswordSerializer(data=request.data)
 
-        if serializer.is_valid():
-            current_password = serializer.data.get("current_password")
-            if not obj.check_password(current_password):
-                return Response({"current_password": ["Wrong password."]},
-                                status=status.HTTP_400_BAD_REQUEST)
-            obj.set_password(serializer.data.get("new_password"))
-            obj.save()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        current_password = dict(serializer.validated_data)['current_password']
+        if not obj.check_password(current_password):
+            return Response({"current_password": ["Wrong password."]},
+                            status=status.HTTP_400_BAD_REQUEST)
+        obj.set_password(dict(serializer.validated_data)['new_password'])
+        obj.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class Logout(APIView):
     '''Класс удаления токена'''
-    permission_classes = [CustomUserPermission]
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, format=None):
         request.user.auth_token.delete()
@@ -167,7 +166,7 @@ class RecipeView(mixins.CreateModelMixin,
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
     pagination_class = CustomPaginator
-    permission_classes = [CustomUserPermission]
+    permission_classes = [CustomPermission]
     filter_backends = (DjangoFilterBackend,)
     filterset_class = CustomFilter
 
@@ -183,7 +182,7 @@ class RecipeView(mixins.CreateModelMixin,
     def favorite(self, request, *args, **kwargs):
         '''Добавление в избранное/удаление из избранного'''
         user = request.user
-        recipe = Recipe.objects.get(id=int(kwargs['pk']))
+        recipe = get_object_or_404(Recipe, id=int(kwargs['pk']))
         if request.method == 'GET':
             if Favorite.objects.filter(user=user, recipes=recipe).exists():
                 return Response(
@@ -215,7 +214,7 @@ class RecipeView(mixins.CreateModelMixin,
     def shopping_cart(self, request, *args, **kwargs):
         '''Создание списка покупок'''
         user = request.user
-        recipe = Recipe.objects.get(id=int(kwargs['pk']))
+        recipe = get_object_or_404(Recipe, id=int(kwargs['pk']))
         if request.method == 'GET':
             if ShoppingCart.objects.filter(user=user, recipes=recipe).exists():
                 return Response(
@@ -247,26 +246,23 @@ class RecipeView(mixins.CreateModelMixin,
     def download_shopping_cart(self, request, *args, **kwargs):
         '''Скачивание списка покупок в формате PDF'''
         user = request.user
-        shop_obj = ShoppingCart.objects.filter(user=user).all()
+        shop_obj = ShoppingCart.objects.filter(user=user)
+        recipes = Recipe.objects.filter(cart_recipes__in=shop_obj)
+        ingredients = RecipeIngredient.objects.filter(recipe__in=recipes)
         cart = {}
 
-        for obj in shop_obj:
-            current_recipe = RecipeIngredient.objects.filter(
-                recipes=obj.recipes
-            )
-            for ingredient in current_recipe:
-                name = ingredient.ingredient.name
-                unit = ingredient.ingredient.measurement_unit
-                amount = ingredient.amount
-                if f'{name}, ({unit})' in cart.keys():
-                    cart[f'{name}, ({unit})'] += amount
-                else:
-                    cart[f'{name}, ({unit})'] = amount
+        for ingredient in ingredients:
+            name = ingredient.ingredient.name
+            unit = ingredient.ingredient.measurement_unit
+            amount = ingredient.amount
+            if f'{name}, ({unit})' in cart:
+                cart[f'{name}, ({unit})'] += amount
+            else:
+                cart[f'{name}, ({unit})'] = amount
 
         buffer = io.BytesIO()
         p = canvas.Canvas(buffer)
         fonts_path = (str(settings.BASE_DIR) + '/api/fonts/')
-        print(fonts_path)
         pdfmetrics.registerFont(
             ttfonts.TTFont('Arial', f'{fonts_path}arial.ttf')
         )
@@ -290,7 +286,7 @@ class RecipeView(mixins.CreateModelMixin,
 
 class TagsView(viewsets.ModelViewSet):
     '''Класс работы с тегами'''
-    queryset = Tags.objects.all()
+    queryset = Tag.objects.all()
     serializer_class = TagSerializer
 
 

@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
 
 from .models import (Favorite, Follow, Ingredient, Recipe, RecipeIngredient,
-                     ShoppingCart, Tags)
+                     ShoppingCart, Tag)
 
 User = get_user_model()
 
@@ -45,7 +45,7 @@ class IngredientAdmin(admin.ModelAdmin):
 
 admin.site.register(User, CustomUserAdmin)
 admin.site.register(Ingredient, IngredientAdmin)
-admin.site.register(Tags)
+admin.site.register(Tag)
 admin.site.register(Recipe, RecipeAdmin)
 admin.site.register(RecipeIngredient)
 admin.site.register(Follow)

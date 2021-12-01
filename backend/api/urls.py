@@ -12,7 +12,7 @@ router.register('tags', TagsView, basename='tags')
 
 
 urlpatterns = [
-    path('auth/token/login/', NewObtainAuthToken.as_view()),
-    path('auth/token/logout/', Logout.as_view()),
+    path('auth/token/login/', NewObtainAuthToken.as_view(), name='login'),
+    path('auth/token/logout/', Logout.as_view(), name='logout'),
     path('', include(router.urls)),
 ]

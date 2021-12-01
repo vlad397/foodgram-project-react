@@ -1,22 +1,38 @@
-HEX = [
-    ('#000000', 'Black'),
-    ('#808080', 'Gray'),
-    ('#C0C0C0', 'Silver'),
-    ('#FFFFFF', 'White'),
-    ('#FF00FF', 'Fuchsia'),
-    ('#800080', 'Purple'),
-    ('#FF0000', 'Red'),
-    ('#FF0000', 'Maroon'),
-    ('#FFFF00', 'Yellow'),
-    ('#808000', 'Olive'),
-    ('#00FF00', 'Lime'),
-    ('#008000', 'Green'),
-    ('#00FFFF', 'Aqua'),
-    ('#008080', 'Teal'),
-    ('#0000FF', 'Blue'),
-    ('#000080', 'Navy'),
-]
+BLACK = '#000000'
+GRAY = '#808080'
+SILVER = '#C0C0C0'
+WHITE = '#FFFFFF'
+FUCHSIA = '#FF00FF'
+PURPLE = '#800080'
+RED = '#FF0000'
+MAROON = '#800000'
+YELLOW = '#FFFF00'
+OLIVE = '#808000'
+LIME = '#00FF00'
+GREEN = '#008000'
+AQUA = '#00FFFF'
+TEAL = '#008080'
+BLUE = '#0000FF'
+NAVY = '#000080'
 
+HEX = [
+    (BLACK, 'Черный'),
+    (GRAY, 'Серый'),
+    (SILVER, 'Серебряный'),
+    (WHITE, 'Белый'),
+    (FUCHSIA, 'Цвет фуксии (розовый)'),
+    (PURPLE, 'Фиолетовый'),
+    (RED, 'Красный'),
+    (MAROON, 'Бордовый'),
+    (YELLOW, 'Желтый'),
+    (OLIVE, 'Оливковый'),
+    (LIME, 'Лаймовый'),
+    (GREEN, 'Зеленый'),
+    (AQUA, 'Цвет морской волны'),
+    (TEAL, 'Бирюзовый'),
+    (BLUE, 'Синий'),
+    (NAVY, 'Темно-синий'),
+]
 
 UNITS = [
     ('г', 'г'),
