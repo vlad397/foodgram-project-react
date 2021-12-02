@@ -35,7 +35,6 @@ class NewObtainAuthToken(APIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
         token, created = Token.objects.get_or_create(user=user)
-        print(type(token.key))
         return Response({'auth_token': token.key})
 
 
@@ -139,11 +138,11 @@ class UserView(mixins.ListModelMixin,
         serializer = ChangePasswordSerializer(data=request.data)
 
         serializer.is_valid(raise_exception=True)
-        current_password = dict(serializer.validated_data)['current_password']
+        current_password = serializer.validated_data['current_password']
         if not obj.check_password(current_password):
-            return Response({"current_password": ["Wrong password."]},
+            return Response({'current_password': ['Wrong password.']},
                             status=status.HTTP_400_BAD_REQUEST)
-        obj.set_password(dict(serializer.validated_data)['new_password'])
+        obj.set_password(serializer.validated_data['new_password'])
         obj.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -248,13 +247,14 @@ class RecipeView(mixins.CreateModelMixin,
         user = request.user
         shop_obj = ShoppingCart.objects.filter(user=user)
         recipes = Recipe.objects.filter(cart_recipes__in=shop_obj)
-        ingredients = RecipeIngredient.objects.filter(recipe__in=recipes)
+        ingredients = (
+            RecipeIngredient.objects.filter(recipe__in=recipes).values_list(
+                'amount', 'ingredient__name', 'ingredient__measurement_unit')
+        )
         cart = {}
 
         for ingredient in ingredients:
-            name = ingredient.ingredient.name
-            unit = ingredient.ingredient.measurement_unit
-            amount = ingredient.amount
+            amount, name, unit = ingredient
             if f'{name}, ({unit})' in cart:
                 cart[f'{name}, ({unit})'] += amount
             else:

@@ -1,9 +1,9 @@
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models.deletion import CASCADE
 
 from .data import HEX, UNITS
+from .validators import CustomMinValidator
 
 
 class User(AbstractUser):
@@ -102,19 +102,8 @@ class RecipeIngredient(models.Model):
         Recipe, on_delete=CASCADE, related_name='recipe_ingredients',
         verbose_name='Рецепт промежуточной модели'
     )
-    # Добавил человекочитаемое сообщение, однако выводится все равно встроенное
-    # Пытался явно задавать message= или просто писать само сообщение, писать
-    # сообщение в скобках(как в самом валидаторе) и без.
-    # Ничего не работает, хотя по документации должно работать.
-    # В слаке мне не смогли подсказать, в нете решения не нашел (может плохо
-    # искал). Было одно англоязычное обсуждение по этому вопросу, но там 
-    # сошлись на том, что сойдет и встроенное сообщение (видимо потому что они 
-    # и так все понимают).
-    # Может Вы подскажете, в чем может быть проблема? Или наследовать и 
-    # изменять сообщение в кастомном валидаторе?
-    # П.с. миграции применял при каждом изменении =)
     amount = models.PositiveSmallIntegerField(
-        validators=[MinValueValidator(1, message=('Минимум единица'))],
+        validators=[CustomMinValidator(1)],
         verbose_name='Количество ингредиента промежуточной модели'
     )
 
@@ -145,11 +134,11 @@ class Favorite(models.Model):
 
 class Follow(models.Model):
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="following",
+        User, on_delete=models.CASCADE, related_name='following',
         verbose_name='Пользователь'
     )
     follower = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="follower",
+        User, on_delete=models.CASCADE, related_name='follower',
         verbose_name='Подписчик'
     )
 
@@ -162,7 +151,7 @@ class Follow(models.Model):
 
 class ShoppingCart(models.Model):
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="owner",
+        User, on_delete=models.CASCADE, related_name='owner',
         verbose_name='Пользователь'
     )
     recipes = models.ForeignKey(

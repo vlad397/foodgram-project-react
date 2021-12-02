@@ -13,17 +13,17 @@ from .models import (Favorite, Follow, Ingredient, Recipe, RecipeIngredient,
 class NewAuthTokenSerializer(serializers.Serializer):
     '''Сериализатор получения токена'''
     email = serializers.EmailField(
-        label=("Email"),
+        label=('Email'),
         write_only=True
     )
     password = serializers.CharField(
-        label=("Password"),
+        label=('Password'),
         style={'input_type': 'password'},
         trim_whitespace=False,
         write_only=True
     )
     token = serializers.CharField(
-        label=("Token"),
+        label=('Token'),
         read_only=True
     )
 
