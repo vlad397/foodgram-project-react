@@ -19,7 +19,7 @@ jobs:
         pip install flake8 pep8-naming flake8-broken-line flake8-return flake8-isort
         pip install -r requirements.txt 
 
-    - name: Test with flake8 and django tests
+    - name: Test with flake8
       run: |
         touch .env
         echo SECRET_KEY=${{ secrets.SECRET_KEY }} > .env
@@ -47,7 +47,7 @@ jobs:
       with:
         push: true
         context: backend
-        tags: ${{ secrets.DOCKER_USERNAME }}/foodgram:latest
+        tags: ${{ secrets.DOCKER_USERNAME }}/foodgram-project-react:latest
   
   deploy:
     runs-on: ubuntu-latest
@@ -64,7 +64,7 @@ jobs:
           stack_file_name: docker-compose.yaml
           script: |
             cd foodgram-project-react
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram-project-react
             sudo docker-compose stop
             sudo docker-compose rm backend
             touch .env
