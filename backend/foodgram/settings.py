@@ -86,7 +86,7 @@ REST_FRAMEWORK = {
         'django_filters.rest_framework.DjangoFilterBackend',
     ),
     'SEARCH_PARAM': 'name'
-} 
+}
 
 AUTH_PASSWORD_VALIDATORS = [
     {
