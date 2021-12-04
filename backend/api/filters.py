@@ -3,7 +3,7 @@ from django_filters.rest_framework import FilterSet
 
 from .models import Recipe
 
-choices = ((0, 0), (1, 1))
+choices = (('false', 'false'), ('true', 'true'))
 
 
 class CustomFilter(FilterSet):
@@ -17,10 +17,10 @@ class CustomFilter(FilterSet):
     def filter_is_favorited(self, queryset, name, value):
         user = self.request.user
         if user.is_authenticated:
-            if value == '1':
+            if value == 'true':
                 recipes = Recipe.objects.filter(favorite_recipes__user=user)
                 return queryset & recipes
-            elif value == '0':
+            elif value == 'false':
                 recipes = Recipe.objects.exclude(favorite_recipes__user=user)
                 return queryset & recipes
         return queryset
@@ -28,10 +28,10 @@ class CustomFilter(FilterSet):
     def filter_is_in_shopping_cart(self, queryset, name, value):
         user = self.request.user
         if user.is_authenticated:
-            if value == '1':
+            if value == 'true':
                 recipes = Recipe.objects.filter(cart_recipes__user=user)
                 return queryset & recipes
-            elif value == '0':
+            elif value == 'false':
                 recipes = Recipe.objects.exclude(cart_recipes__user=user)
                 return queryset & recipes
         else:
