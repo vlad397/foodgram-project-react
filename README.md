@@ -1,4 +1,4 @@
-TODO: Добавить бейджик!!!!!!!!!!!!
+[![Foodgram-app Actions Status](https://github.com/vlad397/foodgram-project-react/workflows/Foodgram-app/badge.svg)](https://github.com/vlad397/foodgram-project-react/actions)
 # FOODGRAM - продуктовый помощник
 ### Описание
 Проект, который позволяет пользователям ```создавать``` собственные рецепты,
