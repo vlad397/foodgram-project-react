@@ -147,15 +147,6 @@ class UserView(mixins.ListModelMixin,
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class Logout(APIView):
-    '''Класс удаления токена'''
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request, format=None):
-        request.user.auth_token.delete()
-        return Response(status=status.HTTP_201_CREATED)
-
-
 class RecipeView(mixins.CreateModelMixin,
                  mixins.ListModelMixin,
                  mixins.UpdateModelMixin,
