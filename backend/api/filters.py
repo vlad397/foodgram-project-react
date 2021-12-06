@@ -1,4 +1,5 @@
-from django_filters.filters import CharFilter, ChoiceFilter, NumberFilter
+from django_filters.filters import (AllValuesMultipleFilter,
+                                    ChoiceFilter, NumberFilter)
 from django_filters.rest_framework import FilterSet
 
 from .models import Recipe
@@ -8,7 +9,9 @@ choices = (('false', 'false'), ('true', 'true'))
 
 class CustomFilter(FilterSet):
     author = NumberFilter(field_name='author')
-    tags = CharFilter(field_name='tags__slug', lookup_expr='iexact')
+    tags = AllValuesMultipleFilter(
+        field_name='tags__slug', lookup_expr='iexact'
+    )
     is_favorited = ChoiceFilter(method='filter_is_favorited', choices=choices)
     is_in_shopping_cart = ChoiceFilter(
         method='filter_is_in_shopping_cart', choices=choices
