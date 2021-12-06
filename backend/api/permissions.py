@@ -7,7 +7,7 @@ class CustomPermission(BasePermission):
     def has_permission(self, request, view):
         user = request.user
         method = request.method
-        if method == 'GET' and (user.is_anonymous or user.is_authenticated):
+        if method == 'GET':
             return True
         elif method in self.methods and user.is_authenticated:
             return True
@@ -16,7 +16,7 @@ class CustomPermission(BasePermission):
     def has_object_permission(self, request, view, obj):
         user = request.user
         method = request.method
-        if method == 'GET' and (user.is_anonymous or user.is_authenticated):
+        if method == 'GET':
             return True
         elif obj.author == user and method in ['DELETE', 'PUT', 'PATCH']:
             return True
