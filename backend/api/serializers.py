@@ -74,9 +74,9 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['email', 'id', 'username',
                   'first_name', 'last_name', 'is_subscribed']
 
-    def get_is_subscribed(self, follower):
+    def get_is_subscribed(self, user):
         '''Проверка того, является ли пользователь нашим подписчиком'''
-        user = self.context['request'].user
+        follower = self.context['request'].user
         if user.is_authenticated:
             return Follow.objects.filter(user=user, follower=follower).exists()
         return False
@@ -261,9 +261,9 @@ class FollowSerializer(serializers.ModelSerializer):
         serializer = FollowRecipeSerialiser(recipes, many=True)
         return serializer.data
 
-    def get_is_subscribed(self, follower):
+    def get_is_subscribed(self, user):
         '''Проверка того, является ли пользователь нашим подписчиком'''
-        user = self.context['request'].user
+        follower = self.context['request'].user
         if user.is_authenticated:
             return Follow.objects.filter(user=user, follower=follower).exists()
         return False

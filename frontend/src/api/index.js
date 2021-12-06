@@ -46,6 +46,7 @@ class Api {
 
   signout () {
     const token = localStorage.getItem('token')
+    localStorage.removeItem('token')
     return fetch(
       '/api/auth/token/logout/',
       {
