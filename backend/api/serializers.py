@@ -77,7 +77,7 @@ class UserSerializer(serializers.ModelSerializer):
     def get_is_subscribed(self, user):
         '''Проверка того, является ли пользователь нашим подписчиком'''
         follower = self.context['request'].user
-        if user.is_authenticated:
+        if follower.is_authenticated:
             return Follow.objects.filter(user=user, follower=follower).exists()
         return False
 
@@ -264,7 +264,7 @@ class FollowSerializer(serializers.ModelSerializer):
     def get_is_subscribed(self, user):
         '''Проверка того, является ли пользователь нашим подписчиком'''
         follower = self.context['request'].user
-        if user.is_authenticated:
+        if follower.is_authenticated:
             return Follow.objects.filter(user=user, follower=follower).exists()
         return False
 
