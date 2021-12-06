@@ -30,10 +30,15 @@
 Перейдите в папку /infra/ и выполните там следующие команды:
 
 `sudo docker-compose up -d --build` *Для запуска сборки контейнеров*
+
 `sudo docker-compose exec backend python manage.py makemigrations` *Для создания миграций*
+
 `sudo docker-compose exec backend python manage.py migrate` *Для применения миграций*
+
 `sudo docker-compose exec backend python manage.py load_data` *Для запуска заранее подготовленного скрипта по загрузке ингредиентов в базу*
+
 `sudo docker-compose exec backend python manage.py createsuperuser` *Для создания суперпользователя*
+
 `sudo docker-compose exec backend python manage.py collectstatic --no-input` *Для сбора статики*
 
 ### Информация об авторе и проекте
