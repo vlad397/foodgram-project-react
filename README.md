@@ -54,5 +54,3 @@ Python-разработчик https://practicum.yandex.ru/backend-developer/
 Сам проект доступен по адресу http://84.252.138.253
 
 Админка доступна по адресу http://84.252.138.253/admin/
-
-Данные для админки: admin admin
